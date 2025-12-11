@@ -20,10 +20,12 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, 'build')));
 
 // API proxy - forward all /api requests to FastAPI backend
+// MUST be before SPA fallback route
 app.use('/api', async (req, res) => {
   // Preserve query string and path using originalUrl and strip the '/api' prefix
   const targetPath = req.originalUrl.replace(/^\/api/, '') || '/';
   const url = `${BACKEND_URL}${targetPath}`;
+  console.log(`[PROXY] ${req.method} ${url}`);
   try {
     const fetchOptions = {
       method: req.method,
@@ -46,12 +48,14 @@ app.use('/api', async (req, res) => {
       res.status(response.status).send(text);
     }
   } catch (err) {
+    console.error(`[PROXY ERROR] ${req.method} ${url}:`, err.message);
     res.status(500).json({ error: err.message });
   }
 });
 
 // Serve index.html for all other SPA routes
 // Use a RegExp route to avoid path-to-regexp parsing issues with '*' tokens
+// This MUST come AFTER /api middleware
 app.get(/.*/, (req, res) => {
   res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });

@@ -1,4 +1,7 @@
-const API_BASE_URL = "http://localhost:8000";
+// Use relative `/api` so the express `server.js` can proxy requests to the backend
+// In production set `BACKEND_URL` env var in Railway to your backend host
+// (e.g. https://auto-app-backend-production.up.railway.app)
+const API_BASE_URL = "/api";
 const DEFAULT_TIMEOUT = 10000;
 
 async function fetchWithTimeout(url, options = {}, timeout = DEFAULT_TIMEOUT) {

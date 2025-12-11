@@ -6,7 +6,11 @@ const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-const BACKEND_URL = process.env.BACKEND_URL || 'auto-app-backend-production.up.railway.app';
+// The backend URL to which `/api` requests will be proxied.
+// In Railway set the `BACKEND_URL` env var to your backend (include https://).
+// Local default uses localhost for development; if you prefer you can set
+// the production backend URL here, but it's better to set it in Railway envs.
+const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:8000';
 
 // Middleware
 app.use(cors());
@@ -17,19 +21,30 @@ app.use(express.static(path.join(__dirname, 'build')));
 
 // API proxy - forward all /api requests to FastAPI backend
 app.use('/api', async (req, res) => {
-  const url = `${BACKEND_URL}${req.path.replace('/api', '')}`;
+  // Preserve query string and path using originalUrl and strip the '/api' prefix
+  const targetPath = req.originalUrl.replace(/^\/api/, '') || '/';
+  const url = `${BACKEND_URL}${targetPath}`;
   try {
     const fetchOptions = {
       method: req.method,
       headers: { ...req.headers },
     };
+    // Avoid sending the original Host header to the backend
+    if (fetchOptions.headers) delete fetchOptions.headers.host;
     if (req.method !== 'GET' && req.method !== 'HEAD') {
       fetchOptions.body = JSON.stringify(req.body);
       fetchOptions.headers['content-type'] = 'application/json';
     }
     const response = await fetch(url, fetchOptions);
-    const data = await response.json();
-    res.status(response.status).json(data);
+    // Forward status and JSON response
+    const contentType = response.headers.get('content-type') || '';
+    if (contentType.includes('application/json')) {
+      const data = await response.json();
+      res.status(response.status).json(data);
+    } else {
+      const text = await response.text();
+      res.status(response.status).send(text);
+    }
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

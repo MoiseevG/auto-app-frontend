@@ -1,0 +1,684 @@
+/* ===== Global Styles ===== */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #2d3748;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3 {
+  margin: 0;
+  font-weight: 700;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* ===== Navigation ===== */
+nav {
+  background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%) !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  border-bottom: 3px solid #fbbf24;
+}
+
+nav span {
+  font-size: 1.1rem !important;
+}
+
+nav strong {
+  color: #fbbf24;
+}
+
+/* ===== Page Container ===== */
+.page-background, .records-page {
+  min-height: calc(100vh - 80px);
+  padding: 40px 20px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(245,246,250,0.95) 100%);
+}
+
+.records-title {
+  text-align: center;
+  font-size: 2.6rem;
+  color: #1e3a8a;
+  margin: 30px 0 40px;
+  font-weight: 700;
+}
+
+/* ===== Record Card ===== */
+.record-card {
+  padding: 24px;
+  border-radius: 14px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  border-left: 6px solid;
+  background: white;
+  transition: all 0.3s ease;
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.record-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.record-card.pending {
+  border-left-color: #f59e0b;
+  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+}
+
+.record-card.paid {
+  border-left-color: #10b981;
+  background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+}
+
+.record-card.cancelled {
+  border-left-color: #ef4444;
+  background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+}
+
+/* Card Header */
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid rgba(0, 0, 0, 0.05);
+}
+
+.card-client {
+  font-size: 1.6rem;
+  color: #1e40af;
+  font-weight: 700;
+}
+
+/* Status Badge */
+.status-badge {
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-badge.pending {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+}
+
+.status-badge.paid {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.status-badge.cancelled {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+}
+
+/* ===== Buttons ===== */
+.btn {
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  display: inline-block;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+.btn-submit {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  width: 100%;
+  padding: 14px;
+  font-size: 1rem;
+}
+
+.btn-pay {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+}
+
+.btn-cancel {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: white;
+}
+
+.btn-delete {
+  background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+  color: white;
+}
+
+.btn-gray {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* ===== Filter Bar ===== */
+.filter-bar {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 30px;
+}
+
+.filter-btn {
+  padding: 8px 16px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 1rem;
+  color: black; /* текст по умолчанию черный */
+  transition: 0.25s;
+}
+
+.filter-btn:hover { opacity: 0.85; }
+
+/* Базовые цвета кнопок */
+.filter-btn.all { background: #dbeafe; }        /* светло-синий фон */
+.filter-btn.pending { background: #fef3c7; }   /* светло-жёлтый фон */
+.filter-btn.paid { background: #dcfce7; }      /* светло-зелёный фон */
+.filter-btn.cancelled { background: #fee2e2; } /* светло-красный фон */
+
+/* Активные кнопки */
+.filter-btn.active {
+  color: white; /* текст белый */
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  transform: scale(1.05);
+}
+
+/* Активные цвета по типу */
+.filter-btn.all.active { background: #6366f1; }
+.filter-btn.pending.active { background: #f59e0b; }
+.filter-btn.paid.active { background: #10b981; }
+.filter-btn.cancelled.active { background: #ef4444; }
+
+/* Info Grid */
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px 24px;
+  margin-bottom: 16px;
+  font-size: 0.95rem;
+}
+
+.info-grid div {
+  display: flex;
+  justify-content: space-between;
+}
+
+.info-grid strong {
+  color: #374151;
+  margin-right: 8px;
+}
+
+.price {
+  font-weight: 700;
+  color: #10b981;
+  font-size: 1.3rem;
+}
+
+.record-comment,
+.record-cancel {
+  padding: 14px;
+  border-radius: 12px;
+  margin-top: 16px;
+  border-left: 4px solid;
+  font-size: 0.95rem;
+}
+
+.record-comment {
+  background: #eff6ff;
+  border-left-color: #3b82f6;
+  color: #1e40af;
+}
+
+.record-cancel {
+  background: #fee2e2;
+  border-left-color: #ef4444;
+  color: #7f1d1d;
+}
+
+.card-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+/* ===== Create Form ===== */
+.create-card {
+  max-width: 520px;
+  margin: 0 auto;
+  background: white;
+  padding: 32px;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  animation: slideUp 0.4s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.create-title {
+  text-align: center;
+  font-size: 2rem;
+  color: #1e3a8a;
+  margin-bottom: 28px;
+}
+
+.create-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.create-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.create-form input,
+.create-form select,
+.create-form textarea {
+  padding: 12px 14px;
+  border: 2px solid #e5e7eb;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-family: inherit;
+  transition: all 0.3s ease;
+}
+
+.create-form input:focus,
+.create-form select:focus,
+.create-form textarea:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.create-form textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+/* ===== Inline Form (for payment/cancel) ===== */
+.inline-form {
+  background: #f9fafb;
+  padding: 16px;
+  border-radius: 12px;
+  margin-top: 16px;
+  border: 2px solid #e5e7eb;
+}
+
+.inline-form input,
+.inline-form textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  font-size: 0.95rem;
+  font-family: inherit;
+}
+
+.inline-form input:focus,
+.inline-form textarea:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.form-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.form-buttons .btn {
+  flex: 1;
+  padding: 10px;
+  font-size: 0.9rem;
+}
+/* src/App.css — полный стиль для всей CRM */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+  min-height: 100vh;
+  color: #333;
+  line-height: 1.6;
+}
+
+/* Контейнер для центрирования */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Навигация */
+nav {
+  background: #1e3a8a;
+  color: white;
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+nav a {
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+  margin-right: 20px;
+  font-size: 1.1rem;
+  transition: opacity 0.3s;
+}
+
+nav a:hover {
+  opacity: 0.8;
+}
+
+/* Заголовки */
+h1 {
+  text-align: center;
+  font-size: 2.8rem;
+  color: white;
+  margin: 40px 0;
+  text-shadow: 2px 2px 10px rgba(0,0,0,0.5);
+}
+
+h2 {
+  font-size: 2.2rem;
+  color: #1e40af;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+/* Карточка записи / операции */
+.record-card {
+  background: white;
+  border-radius: 20px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.record-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 6px;
+  background: var(--status-color, #ccc);
+}
+
+.record-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+}
+
+/* Статус-бейдж */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 50px;
+  color: white;
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+.status-pending { background: #f59e0b; }
+.status-paid    { background: #10b981; }
+.status-cancelled { background: #ef4444; }
+
+/* Сетка информации */
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 20px 0;
+  font-size: 1.1rem;
+}
+
+.info-grid strong {
+  color: #1e40af;
+}
+
+/* Кнопки */
+.btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: white;
+  font-size: 1rem;
+  margin: 6px;
+}
+
+.btn-pay {
+  background: linear-gradient(45deg, #10b981, #059669);
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+}
+
+.btn-cancel {
+  background: linear-gradient(45deg, #ef4444, #dc2626);
+  box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+}
+
+.btn-delete {
+  background: #6b7280;
+}
+
+.btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+}
+
+/* Форма создания и логина */
+.create-form {
+  background: white;
+  padding: 40px;
+  border-radius: 24px;
+  max-width: 600px;
+  margin: 60px auto;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+}
+
+.create-form input {
+  width: 100%;
+  padding: 16px;
+  margin: 10px 0 20px 0;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  transition: border 0.3s;
+}
+
+.create-form input:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+}
+
+.create-form button {
+  width: 100%;
+  padding: 18px;
+  background: linear-gradient(45deg, #6366f1, #8b5cf6);
+  color: white;
+  border: none;
+  border-radius: 16px;
+  font-size: 1.3rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.create-form button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 15px 30px rgba(99, 102, 241, 0.4);
+}
+
+/* Страница услуг */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 24px;
+}
+
+/* Общий отступ */
+.mb-20 {
+  margin-bottom: 20px;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  nav {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  nav div {
+    margin-top: 15px;
+  }
+}
+
+/* ===== Auth Page ===== */
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 20px;
+}
+
+.auth-card {
+  background: white;
+  padding: 40px;
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  max-width: 420px;
+  width: 100%;
+  animation: slideUp 0.5s ease-out;
+}
+
+.auth-title {
+  text-align: center;
+  font-size: 2.2rem;
+  color: #1e3a8a;
+  margin-bottom: 10px;
+  font-weight: 700;
+}
+
+.auth-subtitle {
+  text-align: center;
+  color: #6b7280;
+  margin-bottom: 30px;
+  font-size: 0.95rem;
+}
+
+.auth-input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #e5e7eb;
+  border-radius: 10px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  font-family: inherit;
+  font-weight: 500;
+}
+
+.auth-input:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  outline: none;
+}
+
+.auth-button {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.auth-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.auth-button:active {
+  transform: translateY(0);
+}

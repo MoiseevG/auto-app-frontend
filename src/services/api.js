@@ -1,7 +1,9 @@
-// Use relative `/api` so the express `server.js` can proxy requests to the backend
-// In production set `BACKEND_URL` env var in Railway to your backend host
-// (e.g. https://auto-app-backend-production.up.railway.app)
-const API_BASE_URL = "/api";
+// API base URL. By default use relative `/api` so the express `server.js` can proxy requests
+// to the backend. If the app is deployed as static hosting without the proxy, set
+// `REACT_APP_API_URL` at build time to the backend host (e.g. https://auto-app-backend-production.up.railway.app)
+const RAW_API_BASE = process.env.REACT_APP_API_URL || "/api";
+// normalize (remove trailing slash)
+const API_BASE_URL = RAW_API_BASE.replace(/\/$/, "");
 const DEFAULT_TIMEOUT = 10000;
 
 async function fetchWithTimeout(url, options = {}, timeout = DEFAULT_TIMEOUT) {

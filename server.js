@@ -1,12 +1,8 @@
 // server.js
-import express from 'express';
-import path from 'path';
-import cors from 'cors';
-import { fileURLToPath } from 'url';
-
-// Чтобы корректно использовать __dirname в ESM
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const express = require('express');
+const path = require('path');
+const cors = require('cors');
+const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -22,18 +18,15 @@ app.use(express.static(path.join(__dirname, 'build')));
 // API proxy - forward all /api requests to FastAPI backend
 app.use('/api', async (req, res) => {
   const url = `${BACKEND_URL}${req.path.replace('/api', '')}`;
-
   try {
     const fetchOptions = {
       method: req.method,
       headers: { ...req.headers },
     };
-
     if (req.method !== 'GET' && req.method !== 'HEAD') {
       fetchOptions.body = JSON.stringify(req.body);
       fetchOptions.headers['content-type'] = 'application/json';
     }
-
     const response = await fetch(url, fetchOptions);
     const data = await response.json();
     res.status(response.status).json(data);

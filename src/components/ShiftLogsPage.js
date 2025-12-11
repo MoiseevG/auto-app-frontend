@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "../context/AuthContext";
 
-const API_BASE_URL = "http://localhost:8000";
+const API_BASE_URL = "https://auto-app-backend-production.up.railway.app/";
 
 export default function ShiftLogsPage() {
   const { user } = useAuth();

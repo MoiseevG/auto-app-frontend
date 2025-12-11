@@ -1,6 +1,7 @@
 const express = require('express');
 const path = require('path');
 const cors = require('cors');
+const fetch = require('node-fetch'); // если fetch не глобальный
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -27,8 +28,8 @@ app.use('/api', (req, res) => {
     .catch(err => res.status(500).json({ error: err.message }));
 });
 
-// Serve React app for all other routes (SPA routing)
-app.get('*', (req, res) => {
+// Serve React app for all other SPA routes
+app.get(/.*/, (req, res) => {
   res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
 

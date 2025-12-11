@@ -31,8 +31,13 @@ const proxyRequest = async (req, res) => {
     };
     // Avoid sending the original Host header to the backend
     if (fetchOptions.headers) delete fetchOptions.headers.host;
+    if (fetchOptions.headers) delete fetchOptions.headers['content-length'];
+    
     if (req.method !== 'GET' && req.method !== 'HEAD') {
-      fetchOptions.body = JSON.stringify(req.body);
+      // Правильно передаём тело запроса
+      if (req.body && Object.keys(req.body).length > 0) {
+        fetchOptions.body = JSON.stringify(req.body);
+      }
       fetchOptions.headers['content-type'] = 'application/json';
     }
     const response = await fetch(url, fetchOptions);

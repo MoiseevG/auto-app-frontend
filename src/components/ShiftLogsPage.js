@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "../context/AuthContext";
-
-const API_BASE_URL = "/api";
+import { getShiftLogs } from "../services/api";
 
 export default function ShiftLogsPage() {
   const { user } = useAuth();
@@ -14,14 +13,8 @@ export default function ShiftLogsPage() {
     if (!user) return;
     setLoading(true);
     try {
-      const query = user.role === "operator" ? `?operator_id=${user.id}` : "";
-      const response = await fetch(`${API_BASE_URL}/shifts/logs${query}`);
-      if (response.ok) {
-        const data = await response.json();
-        setLogs(data);
-      } else {
-        setLogs([]);
-      }
+      const data = await getShiftLogs(user.role === "operator" ? user.id : null);
+      setLogs(data);
     } catch (err) {
       console.error("Ошибка загрузки логов:", err);
       setLogs([]);

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { cancelOperation } from "../services/api";
+import { cancelOperation, updatePaymentStatus } from "../services/api";
 import { useAuth } from "../context/AuthContext";
 
 export default function Card({ record, onUpdate, onDelete }) {
@@ -25,10 +25,13 @@ export default function Card({ record, onUpdate, onDelete }) {
 
   const handleSubmitPayment = (e) => {
     e.preventDefault();
-    const updated = { ...data, status: "PAID", price: Number(amount), comment };
-    setData(updated);
-    setEditingPayment(false);
-    onUpdate(updated);
+    updatePaymentStatus(data.id, user.id)
+      .then(updated => {
+        setData(updated);
+        setEditingPayment(false);
+        onUpdate && onUpdate(updated);
+      })
+      .catch(err => alert("Ошибка: " + err.message));
   };
 
   const handleSubmitCancel = async (e) => {
@@ -37,10 +40,15 @@ export default function Card({ record, onUpdate, onDelete }) {
       const result = await cancelOperation(data.id, user.id, cancelReason);
       setData(result);
       setEditingCancel(false);
+      onUpdate && onUpdate(result);
     } catch (err) {
       alert("Ошибка: " + err.message);
     }
   };
+
+  // Получаем информацию о мастере и сервисе из данных операции
+  const serviceName = typeof data.service_id === 'object' ? data.service_id?.name : 'Неизвестная услуга';
+  const masterName = data.master_id ? (typeof data.master_id === 'object' ? data.master_id?.name : 'Назначен') : 'Не назначен';
 
   return (
     <div className={`card`} data-status={statusClass}>
@@ -57,7 +65,8 @@ export default function Card({ record, onUpdate, onDelete }) {
       </div>
 
       <div style={{ marginTop: 12 }}>
-        <div className="kv"><span className="small">Услуга:</span><strong>{data.service_id}</strong></div>
+        <div className="kv"><span className="small">Услуга:</span><strong>{serviceName}</strong></div>
+        <div className="kv"><span className="small">Мастер:</span><strong>{masterName}</strong></div>
         {data.comment && <div style={{ marginTop: 8 }} className="small"><strong>Комментарий:</strong> {data.comment}</div>}
         {data.cancel_reason && <div style={{ marginTop: 8 }} className="small"><strong>Причина отмены:</strong> {data.cancel_reason}</div>}
       </div>

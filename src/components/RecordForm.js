@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { getServices, getCurrentShift } from "../services/api";
+import { getServices, getCurrentShift, getServiceMasters } from "../services/api";
 
 export default function CreateCard({ onCreate }) {
   const navigate = useNavigate();
@@ -10,12 +10,15 @@ export default function CreateCard({ onCreate }) {
   const [loadingShift, setLoadingShift] = useState(true);
   const [services, setServices] = useState([]);
   const [loadingServices, setLoadingServices] = useState(true);
+  const [masters, setMasters] = useState([]);
+  const [loadingMasters, setLoadingMasters] = useState(false);
   
   const [form, setForm] = useState({
     client_name: "",
     car: "",
     service_id: "",
     price: "",
+    master_id: null,
     comment: ""
   });
 
@@ -52,13 +55,31 @@ export default function CreateCard({ onCreate }) {
     const { name, value } = e.target;
     
     if (name === "service_id") {
-      // Когда выбираем услугу, автоматически заполняем цену
+      // Когда выбираем услугу, автоматически заполняем цену и загружаем мастеров
       const selectedService = services.find(s => s.id === parseInt(value));
       setForm({
         ...form,
         [name]: value,
-        price: selectedService ? selectedService.price : ""
+        price: selectedService ? selectedService.price : "",
+        master_id: null // Сбрасываем выбор мастера
       });
+
+      // Загружаем мастеров для этой услуги
+      if (value) {
+        setLoadingMasters(true);
+        getServiceMasters(parseInt(value))
+          .then(data => {
+            setMasters(data);
+            setLoadingMasters(false);
+          })
+          .catch(err => {
+            console.log("Error loading masters:", err);
+            setMasters([]);
+            setLoadingMasters(false);
+          });
+      }
+    } else if (name === "master_id") {
+      setForm({ ...form, [name]: value ? parseInt(value) : null });
     } else {
       setForm({ ...form, [name]: value });
     }
@@ -68,7 +89,7 @@ export default function CreateCard({ onCreate }) {
     e.preventDefault();
 
     if (!form.client_name || !form.car || !form.service_id || !form.price) {
-      alert("Заполните все поля!");
+      alert("Заполните все обязательные поля!");
       return;
     }
 
@@ -80,7 +101,8 @@ export default function CreateCard({ onCreate }) {
     onCreate({ 
       ...form, 
       service_id: Number(form.service_id),
-      price: Number(form.price), 
+      price: Number(form.price),
+      master_id: form.master_id ? Number(form.master_id) : null,
       status: "PENDING",
       operator_id: user?.id 
     });
@@ -161,6 +183,29 @@ export default function CreateCard({ onCreate }) {
                 {services.map(service => (
                   <option key={service.id} value={service.id}>
                     {service.name} - {service.price}₽
+                  </option>
+                ))}
+              </select>
+            )}
+          </label>
+
+          <label>
+            Мастер (опционально)
+            {loadingMasters ? (
+              <select disabled>
+                <option>Загрузка мастеров...</option>
+              </select>
+            ) : (
+              <select
+                name="master_id"
+                value={form.master_id || ""}
+                onChange={handleChange}
+                disabled={user?.role !== "operator" || !form.service_id}
+              >
+                <option value="">Автоматический выбор</option>
+                {masters.map(master => (
+                  <option key={master.id} value={master.id}>
+                    {master.name} ({master.phone})
                   </option>
                 ))}
               </select>

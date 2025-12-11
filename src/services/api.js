@@ -79,9 +79,10 @@ export async function updatePaymentStatus(id, operatorId) {
 export async function cancelOperation(id, operatorId, reason) {
   let res;
   try {
-    res = await fetchWithTimeout(`${API_BASE_URL}/operations/${id}/cancel?operator_id=${operatorId}&reason=${encodeURIComponent(reason)}`, {
+    res = await fetchWithTimeout(`${API_BASE_URL}/operations/${id}/cancel?operator_id=${operatorId}`, {
     method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' }
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(reason)
   });
   } catch (e) {
     throw new Error('Сервер недоступен или истек таймаут');
@@ -139,6 +140,21 @@ export async function closeShift(shiftId, operatorId) {
   return res.json();
 }
 
+// Shift logs endpoint
+export async function getShiftLogs(operatorId = null) {
+  let res;
+  const url = operatorId 
+    ? `${API_BASE_URL}/shifts/logs?operator_id=${operatorId}`
+    : `${API_BASE_URL}/shifts/logs`;
+  try {
+    res = await fetchWithTimeout(url);
+  } catch (e) {
+    throw new Error('Сервер недоступен или истек таймаут');
+  }
+  if (!res.ok) throw new Error('Ошибка при получении логов смен');
+  return res.json();
+}
+
 // Services endpoints
 export async function getServices() {
   let res;
@@ -170,5 +186,60 @@ export async function getCurrentShift(operatorId) {
     throw new Error('Сервер недоступен или истек таймаут');
   }
   if (!res.ok) return null;
+  return res.json();
+}
+
+// Auth functions
+export async function loginUser(phone) {
+  let res;
+  try {
+    res = await fetchWithTimeout(`${API_BASE_URL}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phone })
+    });
+  } catch (e) {
+    throw new Error('Сервер авторизации недоступен');
+  }
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({}));
+    throw new Error(error.detail || 'Пользователь не найден');
+  }
+  return res.json();
+}
+
+export async function verifyUser(phone, code) {
+  let res;
+  try {
+    res = await fetchWithTimeout(`${API_BASE_URL}/auth/verify`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phone, code })
+    });
+  } catch (e) {
+    throw new Error('Сервер авторизации недоступен');
+  }
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({}));
+    throw new Error(error.detail || 'Неверный код');
+  }
+  return res.json();
+}
+
+export async function registerUser(phone, name) {
+  let res;
+  try {
+    res = await fetchWithTimeout(`${API_BASE_URL}/users/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phone, name })
+    });
+  } catch (e) {
+    throw new Error('Сервер регистрации недоступен');
+  }
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({}));
+    throw new Error(error.detail || 'Ошибка регистрации');
+  }
   return res.json();
 }

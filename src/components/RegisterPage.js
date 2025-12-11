@@ -1,9 +1,11 @@
 import { useState } from "react";
+import { useAuth } from "../context/AuthContext";
 
 export default function RegisterPage() {
   const [form, setForm] = useState({ phone: "", name: "" });
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const { register } = useAuth();
 
   // Функция для автоформатирования номера телефона
   const formatPhoneNumber = (value) => {
@@ -42,7 +44,7 @@ export default function RegisterPage() {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const cleanPhone = form.phone.replace(/\D/g, "");
     if (cleanPhone.length !== 11) {
@@ -57,27 +59,18 @@ export default function RegisterPage() {
     setLoading(true);
     setMessage("");
     
-    // Преобразуем номер в формат +7...
-    const normalizedPhone = cleanPhone.length === 11 ? `+${cleanPhone}` : form.phone;
-    
-    fetch("/api/users/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ phone: normalizedPhone, name: form.name })
-    })
-    .then(r => {
-      if (!r.ok) return r.json().then(e => Promise.reject(e));
-      return r.json();
-    })
-    .then(data => {
-      setMessage(`✅ Регистрация успешна! Ваш ID: ${data.id}. Теперь вы можете войти по этому номеру.`);
+    try {
+      // Преобразуем номер в формат +7...
+      const normalizedPhone = `+${cleanPhone}`;
+      const data = await register(normalizedPhone, form.name);
+      setMessage(`✅ Регистрация успешна! Ваш ID: ${data.id || data.name}. Теперь вы можете войти по этому номеру.`);
       setForm({ phone: "", name: "" });
-    })
-    .catch(err => {
-      const errorMsg = err.detail || err.message || "Неизвестная ошибка";
+    } catch (err) {
+      const errorMsg = err.message || "Неизвестная ошибка";
       setMessage(`❌ Ошибка: ${errorMsg}`);
-    })
-    .finally(() => setLoading(false));
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

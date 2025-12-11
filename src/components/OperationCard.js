@@ -18,13 +18,18 @@ export default function OperationCard({ operation, currentUser, onPay, onCancel,
 
   const handlePay = () => {
     const comment = prompt("Комментарий к оплате", "");
-    onPay(operation.id, comment);
+    if (comment !== null) onPay(operation.id, comment);
   };
 
   const handleCancel = () => {
     const reason = prompt("Причина отмены");
     if (reason) onCancel(operation.id, reason);
   };
+
+  // Получаем информацию из объектов или из ID-шек
+  const serviceName = typeof operation.service_id === 'object' ? operation.service_id?.name : 'Неизвестная услуга';
+  const masterName = operation.master_id ? (typeof operation.master_id === 'object' ? operation.master_id?.name : 'Назначен') : "Не назначен";
+  const operatorName = typeof operation.operator_id === 'object' ? operation.operator_id?.name : "—";
 
   return (
     <div className={`record-card ${statusClass}`}>
@@ -39,11 +44,11 @@ export default function OperationCard({ operation, currentUser, onPay, onCancel,
 
       <div className="info-grid">
         <div><strong>Авто:</strong> {operation.car}</div>
-        <div><strong>Услуга:</strong> {operation.service?.name || "—"}</div>
-        <div><strong>Мастер:</strong> {operation.master?.name || "Не назначен"}</div>
+        <div><strong>Услуга:</strong> {serviceName}</div>
+        <div><strong>Мастер:</strong> {masterName}</div>
         <div><strong>Сумма:</strong> <span style={{ fontSize: "1.4rem", fontWeight: "bold", color: "#10b981" }}>{operation.price} ₽</span></div>
         <div><strong>Дата:</strong> {new Date(operation.date).toLocaleDateString("ru-RU")}</div>
-        <div><strong>Оператор:</strong> {operation.operator?.name || "—"}</div>
+        <div><strong>Оператор:</strong> {operatorName}</div>
       </div>
 
       {operation.comment && (

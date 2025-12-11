@@ -79,7 +79,7 @@ export default function ServicesPage() {
     if (!selectedService) return;
     setAssigning(true);
     try {
-      const res = await fetch(`${API_BASE_URL}/services/${selectedService.id}/assign-master?master_id=${masterId}&operator_id=${user.id}`, { method: 'POST' });
+      const res = await fetch(`${API_BASE_URL}/services/${selectedService.id}/assign-master?service_id=${selectedService.id}&master_id=${masterId}&operator_id=${user.id}`, { method: 'POST' });
       if (!res.ok) throw await res.json();
       alert('Мастер назначен');
       await selectService(selectedService.id);

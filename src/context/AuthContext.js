@@ -32,7 +32,7 @@ export function AuthProvider({ children }) {
     const normalized = digits.length === 11 ? `+${digits[0]}${digits.slice(1)}` : String(phone);
     let res;
     try {
-      res = await fetchWithTimeout("http://localhost:8000/auth/login", {
+      res = await fetchWithTimeout("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ phone: normalized })
@@ -52,7 +52,7 @@ export function AuthProvider({ children }) {
     const normalized = digits.length === 11 ? `+${digits[0]}${digits.slice(1)}` : String(phone);
     let res;
     try {
-      res = await fetchWithTimeout("http://localhost:8000/auth/verify", {
+      res = await fetchWithTimeout("/api/auth/verify", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ phone: normalized, code })

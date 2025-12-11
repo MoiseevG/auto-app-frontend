@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { getServices } from "../services/api";
 
-const API_BASE_URL = "http://localhost:8000";
+const API_BASE_URL = "/api";
 
 export default function ServicesPage() {
   const { user } = useAuth();

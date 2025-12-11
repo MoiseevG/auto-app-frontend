@@ -60,7 +60,7 @@ export default function RegisterPage() {
     // Преобразуем номер в формат +7...
     const normalizedPhone = cleanPhone.length === 11 ? `+${cleanPhone}` : form.phone;
     
-    fetch("http://localhost:8000/users/register", {
+    fetch("/api/users/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ phone: normalizedPhone, name: form.name })

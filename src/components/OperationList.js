@@ -1,40 +1,38 @@
 import { useState, useEffect } from "react";
 import OperationCard from "./OperationCard";
+import { getRecords, updatePaymentStatus, cancelOperation, removeRecord } from "../services/api";
 
 export default function OperationList({ currentUser }) {
   const [operations, setOperations] = useState([]);
   const [filter, setFilter] = useState("all");
 
   useEffect(() => {
-    fetch("/operations")
-      .then(r => r.json())
-      .then(data => setOperations(data));
-  }, []);
+    getRecords(currentUser?.id)
+      .then(data => setOperations(data))
+      .catch(err => console.error("Failed to load operations:", err));
+  }, [currentUser?.id]);
 
   const filtered = filter === "all" 
     ? operations 
     : operations.filter(op => op.status === filter);
 
   const handlePay = (id, comment) => {
-    fetch(`/operations/${id}/pay`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ comment })
-    }).then(() => window.location.reload());
+    updatePaymentStatus(id, currentUser?.id)
+      .then(() => window.location.reload())
+      .catch(err => alert("Ошибка при оплате: " + err.message));
   };
 
   const handleCancel = (id, reason) => {
-    fetch(`/operations/${id}/cancel`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ reason })
-    }).then(() => window.location.reload());
+    cancelOperation(id, currentUser?.id, reason)
+      .then(() => window.location.reload())
+      .catch(err => alert("Ошибка при отмене: " + err.message));
   };
 
   const handleDelete = (id) => {
     if (confirm("Удалить операцию?")) {
-      fetch(`/operations/${id}`, { method: "DELETE" })
-        .then(() => setOperations(ops => ops.filter(op => op.id !== id)));
+      removeRecord(id)
+        .then(() => setOperations(ops => ops.filter(op => op.id !== id)))
+        .catch(err => alert("Ошибка при удалении: " + err.message));
     }
   };
 

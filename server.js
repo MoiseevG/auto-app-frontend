@@ -1,7 +1,12 @@
-const express = require('express');
-const path = require('path');
-const cors = require('cors');
-const fetch = require('node-fetch'); // если fetch не глобальный
+// server.js
+import express from 'express';
+import path from 'path';
+import cors from 'cors';
+import { fileURLToPath } from 'url';
+
+// Чтобы корректно использовать __dirname в ESM
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -15,24 +20,34 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, 'build')));
 
 // API proxy - forward all /api requests to FastAPI backend
-app.use('/api', (req, res) => {
+app.use('/api', async (req, res) => {
   const url = `${BACKEND_URL}${req.path.replace('/api', '')}`;
-  
-  fetch(url, {
-    method: req.method,
-    headers: req.headers,
-    body: req.method !== 'GET' && req.method !== 'HEAD' ? JSON.stringify(req.body) : undefined,
-  })
-    .then(r => r.json().then(data => ({ status: r.status, data })))
-    .then(({ status, data }) => res.status(status).json(data))
-    .catch(err => res.status(500).json({ error: err.message }));
+
+  try {
+    const fetchOptions = {
+      method: req.method,
+      headers: { ...req.headers },
+    };
+
+    if (req.method !== 'GET' && req.method !== 'HEAD') {
+      fetchOptions.body = JSON.stringify(req.body);
+      fetchOptions.headers['content-type'] = 'application/json';
+    }
+
+    const response = await fetch(url, fetchOptions);
+    const data = await response.json();
+    res.status(response.status).json(data);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
-// Serve React app for all other SPA routes
-app.get(/.*/, (req, res) => {
+// Serve index.html for all other SPA routes
+app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
 
+// Start server
 app.listen(PORT, () => {
   console.log(`✅ Frontend server running on http://0.0.0.0:${PORT}`);
   console.log(`🔗 Backend API proxied from: ${BACKEND_URL}`);

@@ -53,6 +53,11 @@ const proxyRequest = async (req, res) => {
 
 // API proxy - forward all /api/* requests to FastAPI backend with ALL methods
 // Use RegExp route to avoid path-to-regexp errors with '*' token
+// Lightweight health route to verify the Express server and /api handling are active
+app.get('/api/_health', (req, res) => {
+  res.json({ ok: true, backend: BACKEND_URL });
+});
+
 app.all(/^\/api/, proxyRequest);
 
 // Serve index.html for all other SPA routes

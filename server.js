@@ -10,7 +10,7 @@ const PORT = process.env.PORT || 5000;
 // In Railway set the `BACKEND_URL` env var to your backend (include https://).
 // Local default uses localhost for development; if you prefer you can set
 // the production backend URL here, but it's better to set it in Railway envs.
-const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:8000';
+const BACKEND_URL = process.env.BACKEND_URL || 'https://auto-app-backend-production.up.railway.app';
 
 // Middleware
 app.use(cors());

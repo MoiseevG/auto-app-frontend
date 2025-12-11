@@ -36,8 +36,8 @@ app.use('/api', async (req, res) => {
 });
 
 // Serve index.html for all other SPA routes
-// Use '/*' to avoid path-to-regexp errors when '*' is interpreted as a token
-app.get('/*', (req, res) => {
+// Use a RegExp route to avoid path-to-regexp parsing issues with '*' tokens
+app.get(/.*/, (req, res) => {
   res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
 

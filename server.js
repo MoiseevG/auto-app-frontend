@@ -52,8 +52,8 @@ const proxyRequest = async (req, res) => {
 };
 
 // API proxy - forward all /api/* requests to FastAPI backend with ALL methods
-// Use explicit route matching to ensure it takes priority over SPA fallback
-app.all('/api/*', proxyRequest);
+// Use RegExp route to avoid path-to-regexp errors with '*' token
+app.all(/^\/api/, proxyRequest);
 
 // Serve index.html for all other SPA routes
 // This MUST come AFTER /api routes to avoid catching API calls
